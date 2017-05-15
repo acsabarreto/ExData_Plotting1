@@ -1,0 +1,18 @@
+library(lubridate)
+library(tidyverse)
+holding <- read.table("household_power_consumption.txt", header = TRUE, skip = 66636, nrows = 2881, sep = ";", na.strings = c("?",""))
+colnames(holding) <- c("Date","Time","Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3")
+holding <- mutate(holding, Date = dmy(Date)) %>% 
+  mutate(
+    Time = parse_time(Time),
+    DateTime = ymd_hms(paste(Date,Time,' ')),
+    Global_active_power = parse_number(Global_active_power),
+    Global_reactive_power = parse_number(Global_reactive_power),
+    Global_intensity = parse_number(Global_intensity),
+    Sub_metering_1 = parse_number(Sub_metering_1),
+    Sub_metering_2 = parse_number(Sub_metering_2),
+    Sub_metering_3 = parse_number(Sub_metering_3)
+  )
+png("plot2.png")
+plot(x= holding$DateTime, y= holding$Global_active_power,type = 'l', xlab = "", ylab = "Global Actrive Power(Kilowatts)")
+dev.off()
